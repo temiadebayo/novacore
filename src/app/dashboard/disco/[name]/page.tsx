@@ -7,7 +7,8 @@ import {
   TrendingDownIcon, 
   AlertTriangleIcon, 
   CheckCircleIcon,
-  DollarSignIcon
+  DollarSignIcon,
+  UsersIcon
 } from "@/components/ui/icons"
 import { 
   BarChart, 
