@@ -8,10 +8,9 @@ import {
   CheckCircleIcon,
   DollarSignIcon,
   ZapIcon,
-  Building2Icon,
-  UsersIcon
+  Building2Icon
 } from "@/components/ui/icons"
-import { formatCurrency, formatPercentage } from "@/lib/utils"
+import { formatCurrency } from "@/lib/utils"
 import { 
   BarChart, 
   Bar, 

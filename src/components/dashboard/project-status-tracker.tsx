@@ -4,9 +4,6 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   GanttChartIcon, 
-  CalendarIcon, 
-  DollarSignIcon, 
-  AlertTriangleIcon,
   FilterIcon,
   SearchIcon
 } from "@/components/ui/icons"

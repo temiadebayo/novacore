@@ -6,7 +6,7 @@ import { useEffect } from "react"
 import { Building2Icon, BarChart3Icon, ShieldIcon, TrendingUpIcon } from "@/components/ui/icons"
 
 export default function HomePage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
