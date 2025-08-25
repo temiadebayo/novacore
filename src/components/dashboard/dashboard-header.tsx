@@ -1,46 +1,37 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
-import { BellIcon, UserIcon, LogOutIcon } from "@/components/ui/icons"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { BellIcon, SearchIcon } from "@/components/ui/icons"
+// import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export function DashboardHeader() {
-  const { data: session } = useSession()
-
   return (
-    <header className="bg-background border-b border-border px-6 py-4">
+    <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">
-            Compliance Oversight Dashboard
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Welcome back, {session?.user?.name || "User"}
-          </p>
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+            />
+          </div>
         </div>
         
         <div className="flex items-center space-x-4">
-          <ThemeToggle />
+          {/* Temporarily disabled for demo */}
+          {/* <ThemeToggle /> */}
           
-          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-            <BellIcon className="h-5 w-5" />
+          <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+            <BellIcon className="w-5 h-5" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
           
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <UserIcon className="h-4 w-4 text-primary" />
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground text-sm font-medium">A</span>
             </div>
-            <div className="text-sm">
-              <p className="font-medium text-foreground">{session?.user?.name}</p>
-              <p className="text-muted-foreground capitalize">{session?.user?.role?.toLowerCase()}</p>
-            </div>
-            <button
-              onClick={() => signOut()}
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-              title="Sign out"
-            >
-              <LogOutIcon className="h-4 w-4" />
-            </button>
+            <span className="text-sm font-medium text-foreground">Admin</span>
           </div>
         </div>
       </div>
