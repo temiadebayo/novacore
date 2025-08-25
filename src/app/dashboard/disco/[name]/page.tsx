@@ -7,13 +7,8 @@ import {
   TrendingDownIcon, 
   AlertTriangleIcon, 
   CheckCircleIcon,
-  DollarSignIcon,
-  ZapIcon,
-  Building2Icon,
-  UsersIcon,
-  ShieldIcon
+  DollarSignIcon
 } from "@/components/ui/icons"
-import { formatCurrency, formatPercentage } from "@/lib/utils"
 import { 
   BarChart, 
   Bar, 
@@ -21,12 +16,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line
+  ResponsiveContainer
 } from "recharts"
 
 // Mock data for DISCOs
