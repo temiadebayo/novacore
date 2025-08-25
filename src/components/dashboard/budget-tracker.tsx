@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/icons"
 import { formatCurrency, formatPercentage } from "@/lib/utils"
 import { 
-  BarChart, 
-  Bar, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
