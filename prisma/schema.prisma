@@ -1,0 +1,288 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(CONTRACTOR)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  projects Project[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum UserRole {
+  ADMIN
+  REGULATOR
+  CONTRACTOR
+  PLANT_OPERATOR
+  EXECUTIVE
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  status      ProjectStatus @default(PLANNING)
+  phase       ProjectPhase  @default(INITIATION)
+  riskLevel   RiskLevel     @default(LOW)
+  startDate   DateTime
+  endDate     DateTime?
+  budget      Float
+  actualSpend Float         @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  contractors Contractor[]
+  plants      Plant[]
+  budgets     Budget[]
+  outages     Outage[]
+  maintenance Maintenance[]
+  licenses    License[]
+  filings     RegulatoryFiling[]
+  hseIncidents HSEIncident[]
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectPhase {
+  INITIATION
+  PLANNING
+  EXECUTION
+  MONITORING
+  CLOSURE
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Contractor {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  performance Float    @default(0) // 0-100 score
+  timeliness  Float    @default(0) // 0-100 score
+  safety      Float    @default(0) // 0-100 score
+  quality     Float    @default(0) // 0-100 score
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Plant {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  capacity    Float    // MW
+  availability Float   @default(0) // 0-100 percentage
+  output      Float    @default(0) // MW
+  location    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  outages   Outage[]
+  maintenance Maintenance[]
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  category    String
+  budgeted    Float
+  actual      Float    @default(0)
+  variance    Float    @default(0)
+  month       Int
+  year        Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Outage {
+  id          String      @id @default(cuid())
+  cause       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  duration    Int?        // minutes
+  status      OutageStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  plantId   String
+  plant     Plant   @relation(fields: [plantId], references: [id], onDelete: Cascade)
+}
+
+enum OutageStatus {
+  ACTIVE
+  RESOLVED
+  SCHEDULED
+}
+
+model Maintenance {
+  id          String   @id @default(cuid())
+  type        String
+  description String?
+  scheduledDate DateTime
+  completedDate DateTime?
+  status      MaintenanceStatus @default(SCHEDULED)
+  cost        Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  plantId   String
+  plant     Plant   @relation(fields: [plantId], references: [id], onDelete: Cascade)
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+model License {
+  id          String   @id @default(cuid())
+  type        String
+  number      String
+  issuedDate  DateTime
+  expiryDate  DateTime
+  status      LicenseStatus @default(ACTIVE)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+enum LicenseStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+  PENDING_RENEWAL
+}
+
+model RegulatoryFiling {
+  id          String   @id @default(cuid())
+  type        String
+  title       String
+  description String?
+  status      FilingStatus @default(PENDING)
+  dueDate     DateTime
+  submittedDate DateTime?
+  fileUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+enum FilingStatus {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+  OVERDUE
+}
+
+model HSEIncident {
+  id          String   @id @default(cuid())
+  type        String   // Safety, Environmental, Health
+  severity    Severity @default(LOW)
+  description String
+  date        DateTime
+  location    String?
+  status      IncidentStatus @default(OPEN)
+  resolution  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  CLOSED
+} 
