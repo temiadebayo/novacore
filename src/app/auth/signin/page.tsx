@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { signIn } from "next-auth/react"
+// import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2Icon, EyeIcon, EyeOffIcon } from "@/components/ui/icons"
@@ -11,129 +11,96 @@ export default function SignInPage() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError("Invalid email or password")
-      } else {
-        router.push("/dashboard")
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.")
-    } finally {
+    
+    // Simulate loading for demo purposes
+    setTimeout(() => {
       setIsLoading(false)
-    }
+      // Bypass auth - go straight to dashboard
+      router.push("/dashboard")
+    }, 1000)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="flex justify-center">
-            <Building2Icon className="h-12 w-12 text-primary" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+            <Building2Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-foreground">
-            NovaCore
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Compliance Oversight & Performance Tracking
+          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Sign in to your NovaCore account
           </p>
-          <p className="mt-3 text-lg font-bold text-primary">
-            Novacore, your power sector partner
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Sign in to your account</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground">
-                  Email address
-                </label>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
+              <div className="relative">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-input text-foreground placeholder:text-muted-foreground"
-                  placeholder="Enter your email"
                 />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                  Password
-                </label>
-                <div className="mt-1 relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full px-3 py-2 pr-10 border border-border rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-input text-foreground placeholder:text-muted-foreground"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOffIcon className="h-5 w-5 text-muted-foreground" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5 text-muted-foreground" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div>
                 <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                  {isLoading ? "Signing in..." : "Sign in"}
+                  {showPassword ? (
+                    <EyeOffIcon className="w-4 h-4" />
+                  ) : (
+                    <EyeIcon className="w-4 h-4" />
+                  )}
                 </button>
               </div>
-
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground">
-                  Demo credentials: admin@novacore.com / password123
-                </p>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </form>
+          
+          {/* Demo notice */}
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+            <p className="text-xs text-blue-600 dark:text-blue-400 text-center">
+              🚀 Demo Mode: Any email/password will work
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 } 
